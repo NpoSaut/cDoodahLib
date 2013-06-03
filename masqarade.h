@@ -12,6 +12,10 @@
 //  ║   #ifdef WIN32                                            ║
 //  ║       winConsoleandler = GetStdHandle(STD_OUTPUT_HANDLE); ║
 //  ║   #endif                                                  ║
+//  ║   и ещё в какое-то место строки:                          ║
+//  ║   #ifdef WIN32                                            ║
+//  ║       HANDLE winConsoleandler;                            ║
+//  ║   #endif                                                  ║
 //  ╚═══════════════════════════════════════════════════════════╝
 
 #ifdef WIN32
@@ -39,7 +43,7 @@
 #define CL_YELLOW_L CL_LIGHT(CL_YELLOW)
 #define CL_WHITE_L  CL_LIGHT(CL_WHITE)
 
-HANDLE winConsoleandler;
+extern HANDLE winConsoleandler;
 
 #else
 
