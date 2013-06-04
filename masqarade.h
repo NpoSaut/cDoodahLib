@@ -10,14 +10,18 @@
 //  ╟───────────────────────────────────────────────────────────╢
 //  ║   Необходимо добавить в начало main() строки:             ║
 //  ║   #ifdef WIN32                                            ║
-//  ║       ch = GetStdHandle(STD_OUTPUT_HANDLE);               ║
+//  ║       winConsoleandler = GetStdHandle(STD_OUTPUT_HANDLE); ║
+//  ║   #endif                                                  ║
+//  ║   и ещё в какое-то место строки:                          ║
+//  ║   #ifdef WIN32                                            ║
+//  ║       HANDLE winConsoleandler;                            ║
 //  ║   #endif                                                  ║
 //  ╚═══════════════════════════════════════════════════════════╝
 
 #ifdef WIN32
 
 #include <Windows.h>
-#define SET_COLOR(fg, bg) SetConsoleTextAttribute(ch, fg + 16*bg)
+#define SET_COLOR(fg, bg) SetConsoleTextAttribute(winConsoleandler, fg + 16*bg)
 #define RESET_COLOR SET_COLOR(7,0)
 
 #define CL_BLACK    0
@@ -39,7 +43,7 @@
 #define CL_YELLOW_L CL_LIGHT(CL_YELLOW)
 #define CL_WHITE_L  CL_LIGHT(CL_WHITE)
 
-HANDLE ch;
+extern HANDLE winConsoleandler;
 
 #else
 
