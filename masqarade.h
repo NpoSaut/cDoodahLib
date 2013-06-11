@@ -70,7 +70,7 @@ extern HANDLE winConsoleandler;
 
 #endif
 
-#define CPRINTF(__color__, __format__, ...) SET_COLOR(__color__, CL_BLACK); printf(__format__, __VA_ARGS__); RESET_COLOR;
+#define CPRINTF(__color__, ...) SET_COLOR(__color__, CL_BLACK); printf(__VA_ARGS__); RESET_COLOR;
 
 
 
