@@ -40,12 +40,14 @@ public:
     Complex (const volatile Base& a)
         : base (a) {}
 
+#if defined CPP11
     template<typename... Args>
     Complex (const uint8_t& byte0, const Args&... bytes)
         { init (0, byte0, bytes...); }
     template<typename... Args>
     Complex (const volatile uint8_t& byte0, const volatile Args&... bytes)
         { init (0, byte0, bytes...); }
+#endif // CPP11
 
     operator Base& ()
         { return base; }
@@ -61,18 +63,22 @@ public:
 private:
     void init (uint8_t n) {}
 
+#if defined CPP11
     template< typename... Args >
     void init (uint8_t n, uint8_t byte, Args... bytes)
     {
         operator[] (n) = byte;
         init (n+1, bytes...);
     }
+#endif // CPP11
 };
 
+#if defined CPP11
 Complex<uint16_t> swap (const uint16_t& a)
 {
     return {Complex<uint16_t>(a)[1], Complex<uint16_t>(a)[0]};
 }
+#endif // CPP11
 
 // Подбирает беззнаковый тип нужного размера (в байтах)
 template <uint8_t size> struct TypeSelect;
