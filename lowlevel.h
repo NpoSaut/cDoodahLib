@@ -2,6 +2,7 @@
 #define LOWLEVEL_H
 
 #include <stdint.h>
+#include <vector>
 
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
@@ -56,6 +57,104 @@ public:
         { return base; }
     operator volatile Base& () volatile
         { return base; }
+    operator std::vector<unsigned char> ()
+        { return  std::vector<unsigned char> (
+                    horrible_cast<unsigned char *> (&base),
+                    horrible_cast<unsigned char *> (&base) + size
+                    );
+        }
+
+    std::vector<unsigned char> msbFirst ()
+    {
+        unsigned char reverse [size];
+        for (int i = 0; i < size; i ++)
+            reverse[i] = operator [] (size - i - 1);
+        return std::vector<unsigned char> (
+                    horrible_cast<unsigned char *> (&reverse),
+                    horrible_cast<unsigned char *> (&reverse) + size
+                    );
+    }
+
+    // Доступ к N-тому байту. 0 байт - наименее значащий
+    uint8_t& operator[] (uint8_t byteNumber)
+        { return *((uint8_t*)this + byteNumber); }
+
+    Base base;
+
+private:
+    void init (uint8_t n) {}
+
+#if defined CPP11
+    template< typename... Args >
+    void init (uint8_t n, uint8_t byte, Args... bytes)
+    {
+        operator[] (n) = byte;
+        init (n+1, bytes...);
+    }
+#endif // CPP11
+
+    static constexpr unsigned char size = sizeof(Base);
+};
+
+#if defined CPP11
+inline Complex<uint16_t> swap (const uint16_t& a)
+{
+    return {Complex<uint16_t>(a)[1], Complex<uint16_t>(a)[0]};
+}
+#endif // CPP11
+
+// Подбирает беззнаковый тип нужного размера (в байтах)
+template <uint8_t size> struct TypeSelect;
+    template <> struct TypeSelect<1> { typedef uint8_t Result; };
+    template <> struct TypeSelect<2> { typedef uint16_t Result; };
+    template <> struct TypeSelect<3> { typedef uint32_t Result; };
+    template <> struct TypeSelect<4> { typedef uint32_t Result; };
+    template <> struct TypeSelect<5> { typedef uint64_t Result; };
+    template <> struct TypeSelect<6> { typedef uint64_t Result; };
+    template <> struct TypeSelect<7> { typedef uint64_t Result; };
+    template <> struct TypeSelect<8> { typedef uint64_t Result; };
+
+template <int size>
+class ByteArray
+{
+public:
+    typedef typename TypeSelect<size>::Result Base;
+
+    ByteArray (const Base& a =0)
+        : base (a) {}
+    ByteArray (const volatile Base& a)
+        : base (a) {}
+
+#if defined CPP11
+    template<typename... Args>
+    ByteArray (const uint8_t& byte0, const Args&... bytes)
+        { init (0, byte0, bytes...); }
+    template<typename... Args>
+    ByteArray (const volatile uint8_t& byte0, const volatile Args&... bytes)
+        { init (0, byte0, bytes...); }
+#endif // CPP11
+
+    operator Base& ()
+        { return base; }
+    operator volatile Base& () volatile
+        { return base; }
+    operator std::vector<unsigned char> ()
+        { return  std::vector<unsigned char> (
+                    horrible_cast<unsigned char *> (&base),
+                    horrible_cast<unsigned char *> (&base) + size
+                    );
+        }
+
+    std::vector<unsigned char> msbFirst ()
+    {
+        unsigned char reverse [size];
+        for (int i = 0; i < size; i ++)
+            reverse[i] = operator [] (size - i - 1);
+        return std::vector<unsigned char> (
+                    horrible_cast<unsigned char *> (&reverse),
+                    horrible_cast<unsigned char *> (&reverse) + size
+                    );
+    }
 
     // Доступ к N-тому байту. 0 байт - наименее значащий
     uint8_t& operator[] (uint8_t byteNumber)
@@ -76,19 +175,6 @@ private:
 #endif // CPP11
 };
 
-#if defined CPP11
-inline Complex<uint16_t> swap (const uint16_t& a)
-{
-    return {Complex<uint16_t>(a)[1], Complex<uint16_t>(a)[0]};
-}
-#endif // CPP11
-
-// Подбирает беззнаковый тип нужного размера (в байтах)
-template <uint8_t size> struct TypeSelect;
-    template <> struct TypeSelect<1> { typedef uint8_t Result; };
-    template <> struct TypeSelect<2> { typedef uint16_t Result; };
-    template <> struct TypeSelect<4> { typedef uint32_t Result; };
-    template <> struct TypeSelect<8> { typedef uint64_t Result; };
 
 // Для имеющиейся структуры с битовыми полями Bit
 // предосталяет доступ как к целому
