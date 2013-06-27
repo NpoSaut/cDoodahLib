@@ -1,9 +1,12 @@
 #ifndef LOWLEVEL_H
 #define LOWLEVEL_H
 
+#include <stdint.h>
+
 typedef unsigned char uint8_t;
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;
+typedef unsigned long int uint64_t;
 
 // Опасное приведение типов - просто один тип назывется другим
 // Единственная проверка - совпадение размеров
@@ -74,7 +77,7 @@ private:
 };
 
 #if defined CPP11
-Complex<uint16_t> swap (const uint16_t& a)
+inline Complex<uint16_t> swap (const uint16_t& a)
 {
     return {Complex<uint16_t>(a)[1], Complex<uint16_t>(a)[0]};
 }
@@ -85,6 +88,7 @@ template <uint8_t size> struct TypeSelect;
     template <> struct TypeSelect<1> { typedef uint8_t Result; };
     template <> struct TypeSelect<2> { typedef uint16_t Result; };
     template <> struct TypeSelect<4> { typedef uint32_t Result; };
+    template <> struct TypeSelect<8> { typedef uint64_t Result; };
 
 // Для имеющиейся структуры с битовыми полями Bit
 // предосталяет доступ как к целому
