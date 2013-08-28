@@ -5,9 +5,20 @@
 
 # Compiled Dynamic libraries
 *.so
+*.dll
 *.dylib
 
 # Compiled Static libraries
 *.lai
 *.la
 *.a
+
+# Windows-specific files
+Thumbs.db
+desktop.ini
+# Mac-specific things (thanks to Michael Aaron Safyan)
+.DS_Store
+
+# Editors temporary files 
+*~
+*.autosave
