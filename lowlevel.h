@@ -93,7 +93,7 @@ private:
     }
 #endif // CPP11
 
-    static constexpr unsigned char size = sizeof(Base);
+    static const unsigned char size = sizeof(Base);
 };
 
 #if defined CPP11
